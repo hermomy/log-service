@@ -20,7 +20,7 @@ def archiveLogClick(results, cursor, column_data):
             cursor.execute(query, d)
             logger.info("LogClick ID inserted into {}: {}".format(ARCHIVE_TABLE, rowId))
 
-    except database.Error as error:
+    except database.ProgrammingError as error:
         logger.warning(error)
 
 def purgeOrigin(cursor, last_date):
@@ -28,7 +28,7 @@ def purgeOrigin(cursor, last_date):
     try:
         cursor.execute(query)
         logger.info("{} rows with created date <= {} has been deleted".format(cursor.rowcount, last_date))
-    except database.Error as error:
+    except database.ProgrammingError as error:
         logger.warning("Error: {}".format(error))
 
 def closeConnections(connection):

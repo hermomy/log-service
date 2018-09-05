@@ -11,15 +11,15 @@ from utilities import archiveLogClick, purgeOrigin, closeConnections
 
 today = DT.date.today()
 
-date_condition = "2019-04-01"#today - DT.timedelta(days=int(TIMEDELTA))
-logger.info(date_condition)
+date_condition = today - DT.timedelta(days=int(TIMEDELTA))
+logger.info("Data will be selected from {} onwards ({} days).".format(date_condition, TIMEDELTA))
 ORIGIN.execute("select * FROM log_clicks WHERE created <= '{0!s}'".format(date_condition))
-logger.info(ORIGIN.rowcount)
+
 log_clicks_data = ORIGIN.fetchall()
 
 ORIGIN.execute("desc {}".format(ORIGIN_TABLE))
 columns = ORIGIN.fetchall()
-logger.info('Columns: {}'.format(len(columns)))
+logger.info('Number of columns from origin: {}'.format(len(columns)))
 
 archiveLogClick(log_clicks_data, ARCHIVE, columns)
 archiveLogClick(log_clicks_data, ORIGIN, columns)
@@ -29,7 +29,6 @@ if ARCHIVE.rowcount > 0:
     logger.warning('%s rows successfully added' % ARCHIVE.rowcount)
     purgeOrigin(ORIGIN, date_condition)
 else:
-    logger.info('No rows affected')
+    logger.info('No rows has been affected')
 
-logger.info(ARCHIVE.statement)
 closeConnections(connection)

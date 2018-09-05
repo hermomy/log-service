@@ -7,3 +7,4 @@ pyenv.cfg
 env
 LogService.log
 __pycache__
+config-production.ini
