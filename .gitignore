@@ -1,0 +1,10 @@
+bin
+include
+lib
+pip-selfcheck.json
+.Python
+pyenv.cfg
+env
+LogService.log
+__pycache__
+config-production.ini
