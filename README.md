@@ -18,7 +18,7 @@ pip install requirements.txt
 ```
 
 - Setup the config. In order to deploy to production server, please create the file `config-production.ini` at the same directory level of `main.py`
-- Fill up the file with this content
+- Fill up the file with this content or you can refer to the existing `config.php`
 
 ```
 [STATE]
