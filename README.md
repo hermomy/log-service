@@ -14,7 +14,7 @@ virtualenv env
 - Install all the dependencies
 
 ```
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 - Setup the config. In order to deploy to production server, please create the file `config-production.ini` at the same directory level of `main.py`
