@@ -18,12 +18,13 @@ config = ConfigParser.ConfigParser()
 try:
     config.readfp(open('config-production.ini'))
     logging.basicConfig(filename='LogService.log', filemode='w', level=logging.DEBUG)
-except IOError:
+except IOError: # File not found, use development configuration
     config.read('config.ini')
 
 for c in config.sections():
     logger.warning('Database: {0}'.format(config.get(c, 'DATABASE')))
 
+logger.info('Opening a connection to database...')
 connection = {
     'ORIGIN': database.connect(user=config.get('ORIGIN', 'USER'),
                      password=config.get('ORIGIN', 'PASSWORD'),
