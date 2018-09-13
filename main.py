@@ -7,12 +7,12 @@
 
 import sys
 import datetime as DT
-from db import logger, connection, ORIGIN, ORIGIN_TABLE, ARCHIVE, ARCHIVE_TABLE, TIMEDELTA
+from db import logger, connection, ORIGIN, ORIGIN_TABLE, ARCHIVE, ARCHIVE_TABLE, TIMEDELTA, BATCH
 from utilities import archiveLogClick, purgeOrigin, closeConnections
 import mysql.connector as database
 
 today = DT.date.today()
-batch = 5
+batch = BATCH
 
 if len(sys.argv) > 1:
     batch = sys.argv[1]
@@ -28,13 +28,16 @@ try:
     ORIGIN.execute("desc {}".format(ORIGIN_TABLE))
     origin_columns = ORIGIN.fetchall()
 
-    archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
-    ids = archiveLogClick(data, ARCHIVE, origin_columns, ARCHIVE_TABLE, batch) # For the new DB
+    origin_ids = archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
 
-    # clear log_clicks after archived
-    if len(ids) > 0:
-        logger.warning('%s rows successfully added' % len(ids))
-        purgeOrigin(ORIGIN, ids)
+    if len(origin_ids) > 0:
+        logger.warning('%s rows successfully added into origin' % len(archive_ids))
+
+    archive_ids = archiveLogClick(data, ARCHIVE, origin_columns, ARCHIVE_TABLE, batch) # For the new DB
+    # clear log_clicks after archived, only after successfully archived, hence the archive_ids length
+    if len(archive_ids) > 0:
+        logger.warning('%s rows successfully archived' % len(archive_ids))
+        purgeOrigin(ORIGIN, archive_ids)
     else:
         logger.info('Nothing is done...')
 

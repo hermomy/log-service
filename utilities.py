@@ -36,7 +36,8 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
                             # logger.info("LogClick ID inserted into {}: {}".format(table_into, data[item][0]))
                             ids.append(data[item][0])
                         except database.IntegrityError as error:
-                            logger.warning("Error: {}, continuing...".format(error))
+                            total_rows = total_rows - 1
+                            logger.error("{}, continuing...".format(error))
                             pass
                 cursor.execute("select database()")
                 db_name = cursor.fetchone()[0]
@@ -58,7 +59,7 @@ def purgeOrigin(cursor, item_ids):
         cursor.execute(query)
         cursor.execute("select database()")
         db_name = cursor.fetchone()[0]
-        logger.info("{} rows with has been deleted from {}.{}".format(len(item_ids, db_name, ORIGIN_TABLE)))
+        logger.info("{} rows with has been deleted from {}.{}".format(len(item_ids), db_name, ORIGIN_TABLE))
     except database.ProgrammingError as error:
         logger.warning("Error: {}".format(error))
 
