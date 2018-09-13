@@ -24,6 +24,7 @@ except IOError:
 for c in config.sections():
     logger.warning('Database: {0}'.format(config.get(c, 'DATABASE')))
 
+logger.info('Opening a connection to database...')
 connection = {
     'ORIGIN': database.connect(user=config.get('ORIGIN', 'USER'),
                      password=config.get('ORIGIN', 'PASSWORD'),
