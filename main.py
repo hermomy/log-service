@@ -31,13 +31,13 @@ try:
     origin_ids = archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
 
     if len(origin_ids) > 0:
-        logger.warning('%s rows successfully added into origin' % len(archive_ids))
+        logger.warning('%s rows successfully added into origin' % len(origin_ids))
 
     archive_ids = archiveLogClick(data, ARCHIVE, origin_columns, ARCHIVE_TABLE, batch) # For the new DB
     # clear log_clicks after archived, only after successfully archived, hence the archive_ids length
-    if len(archive_id) > 0:
-        logger.warning('%s rows successfully archived' % len(archive_id))
-        purgeOrigin(ORIGIN, archive_id)
+    if len(archive_ids) > 0:
+        logger.warning('%s rows successfully archived' % len(archive_ids))
+        purgeOrigin(ORIGIN, archive_ids)
     else:
         logger.info('Nothing is done...')
 
