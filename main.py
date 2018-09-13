@@ -14,6 +14,9 @@ import mysql.connector as database
 today = DT.date.today()
 batch = BATCH
 
+if len(sys.argv) > 1:
+    batch = sys.argv[1]
+
 date_condition = today - DT.timedelta(days=int(TIMEDELTA))
 logger.info("Data will be selected from {} onwards ({} days) from table {}.".format(date_condition, TIMEDELTA, ORIGIN_TABLE))
 
