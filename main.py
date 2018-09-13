@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
     batch = sys.argv[1]
 
 date_condition = today - DT.timedelta(days=int(TIMEDELTA))
-logger.info("Data will be selected from {} onwards ({} days).".format(date_condition, TIMEDELTA))
+logger.info("Data will be selected from {} onwards ({} days) from table {}.".format(date_condition, TIMEDELTA, ORIGIN_TABLE))
 
 try:
     # Get data
@@ -26,46 +26,21 @@ try:
     data = ORIGIN.fetchall()
 
     ORIGIN.execute("desc {}".format(ORIGIN_TABLE))
-    columns = ORIGIN.fetchall()
+    origin_columns = ORIGIN.fetchall()
 
-    ARCHIVE.execute("desc {}".format(ARCHIVE_TABLE))
+    archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
+    ids = archiveLogClick(data, ARCHIVE, origin_columns, ARCHIVE_TABLE, batch) # For the new DB
 
-    #archiveLogClick(data, ORIGIN,columns, batch)
-    archiveLogClick(data, ARCHIVE, columns, ARCHIVE_TABLE, batch)
-
-except (database.IntegrityError, database.ProgrammingError) as error:
-    logger.warning(error)
-    for key, conn in connection.items():
-        conn.rollback()
-        conn.close()
-        logger.info("Rollback {}".format(key))
-
-"""
-try:
-    ORIGIN.execute("select * FROM log_clicks WHERE created <= '{0!s}'".format(date_condition))
-    ARCHIVE.execute("select * FROM archive_log_clicks WHERE created <= '{0!s}'".format(date_condition))
-
-    log_clicks_data = ORIGIN.fetchall()
-
-    ORIGIN.execute("desc {}".format(ORIGIN_TABLE))
-    columns = ORIGIN.fetchall()
-
-    # archiveLogClick(log_clicks_data, ARCHIVE, columns, batch)
-    archiveLogClick(log_clicks_data, ORIGIN, columns, batch)
-
-    print(ARCHIVE.rowcount)
-    # Clear after archived
-    if ARCHIVE.rowcount > 0:
-        logger.warning('%s rows successfully added' % ARCHIVE.rowcount)
-        purgeOrigin(ORIGIN, date_condition)
+    # clear log_clicks after archived
+    if len(ids) > 0:
+        logger.warning('%s rows successfully added' % len(ids))
+        purgeOrigin(ORIGIN, ids)
     else:
-        logger.info('No rows has been affected')
+        logger.info('Nothing is done...')
 
-    closeConnections(connection)
 except (database.IntegrityError, database.ProgrammingError) as error:
     logger.warning(error)
     for key, conn in connection.items():
         conn.rollback()
         conn.close()
         logger.info("Rollback {}".format(key))
-"""

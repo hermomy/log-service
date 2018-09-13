@@ -18,7 +18,7 @@ config = ConfigParser.ConfigParser()
 try:
     config.readfp(open('config-production.ini'))
     logging.basicConfig(filename='LogService.log', filemode='w', level=logging.DEBUG)
-except IOError: # File not found, use development configuration
+except IOError:
     config.read('config.ini')
 
 for c in config.sections():
