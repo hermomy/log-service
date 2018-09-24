@@ -31,10 +31,10 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
                 seq = xrange(total_rows)
                 for batched in batch(seq, int(batch_count)):
                     for item in batched:
+                        ids.append(data[item][0]) # Appending duplicate ids for deletion
                         try:
                             cursor.execute(query, data[item])
                             logger.info("LogClick ID inserted into {}: {}".format(table_into, data[item][0]))
-                            ids.append(data[item][0])
                         except database.IntegrityError as error:
                             total_rows = total_rows - 1
                             logger.error("{}, continuing...".format(error))
@@ -55,11 +55,14 @@ def purgeOrigin(cursor, item_ids):
     # Delete rows with inserted ids in ARCHIVE
     logger.info("Deleting archived records...")
 
+    seq = xrange(len(item_ids))
     try:
-        for d in item_ids:
-            delquery = "DELETE FROM %s WHERE id = %s" % (ORIGIN_TABLE, d)
-            cursor.execute(delquery)
-            logger.info("Deleted {}".format(d))
+        for batched in batch(seq, 150):
+            for d in batched:
+                iid = item_ids[d]
+                delquery = "DELETE FROM %s WHERE id = %s" % (ORIGIN_TABLE, iid)
+                cursor.execute(delquery)
+                logger.info("Deleted {}".format(iid))
         cursor.execute("select database()")
         db_name = cursor.fetchone()[0]
         logger.info("{} rows with has been deleted from {}.{}".format(len(item_ids), db_name, ORIGIN_TABLE))
