@@ -44,19 +44,6 @@ connection = {
 
 ORIGIN = connection['ORIGIN'].cursor()
 ARCHIVE = connection['ARCHIVE'].cursor()
-
-global_connect_timeout = 'SET GLOBAL connect_timeout=18000'
-global_wait_timeout = 'SET GLOBAL connect_timeout=18000'
-global_interactive_timeout = 'SET GLOBAL connect_timeout=18000'
-
-ORIGIN.execute(global_connect_timeout)
-ORIGIN.execute(global_wait_timeout)
-ORIGIN.execute(global_interactive_timeout)
-
-ARCHIVE.execute(global_connect_timeout)
-ARCHIVE.execute(global_wait_timeout)
-ARCHIVE.execute(global_interactive_timeout)
-
 ORIGIN_TABLE = config.get('ORIGIN', 'TABLE')
 ARCHIVE_TABLE = config.get('ARCHIVE', 'TABLE')
 TIMEDELTA = config.get('STATE', 'SYNC_DELTA_DAYS')
