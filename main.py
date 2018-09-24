@@ -41,6 +41,8 @@ try:
     else:
         logger.info('Nothing is done...')
 
+    closeConnections(connection)
+
 except (database.IntegrityError, database.ProgrammingError) as error:
     logger.warning(error)
     for key, conn in connection.items():

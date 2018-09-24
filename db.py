@@ -30,18 +30,20 @@ connection = {
                      password=config.get('ORIGIN', 'PASSWORD'),
                      database=config.get('ORIGIN', 'DATABASE'),
                      port=config.get('ORIGIN', 'PORT'),
-                     host=config.get('ORIGIN', 'HOST')
+                     host=config.get('ORIGIN', 'HOST'),
+                     connect_timeout=28800
                      ),
     'ARCHIVE': database.connect(user=config.get('ARCHIVE', 'USER'),
                      password=config.get('ARCHIVE', 'PASSWORD'),
                      database=config.get('ARCHIVE', 'DATABASE'),
                      port=config.get('ARCHIVE', 'PORT'),
-                     host=config.get('ARCHIVE', 'HOST')
+                     host=config.get('ARCHIVE', 'HOST'),
+                     connect_timeout=28800
                      )
 }
 
-ORIGIN = connection['ORIGIN'].cursor(buffered=True)
-ARCHIVE = connection['ARCHIVE'].cursor(buffered=True)
+ORIGIN = connection['ORIGIN'].cursor()
+ARCHIVE = connection['ARCHIVE'].cursor()
 ORIGIN_TABLE = config.get('ORIGIN', 'TABLE')
 ARCHIVE_TABLE = config.get('ARCHIVE', 'TABLE')
 TIMEDELTA = config.get('STATE', 'SYNC_DELTA_DAYS')
