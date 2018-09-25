@@ -53,8 +53,11 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
 
 def connectionStatus(connection, status="close"):
     for key, conn in connection.items():
-        conn.commit()
-        conn.close() if status == "close" else conn.reconnect(attempts=3, delay=0)
+        if status == "close":
+            conn.commit()
+            conn.close()
+        else:
+            conn.reconnect(attempts=3, delay=0)
         logger.info("Connections on {} {}".format(key, status))
 
 def purgeOrigin(cursor, item_ids):
