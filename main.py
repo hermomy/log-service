@@ -8,7 +8,7 @@
 import sys
 import datetime as DT
 from db import logger, connection, ORIGIN, ORIGIN_TABLE, ARCHIVE, ARCHIVE_TABLE, TIMEDELTA, BATCH
-from utilities import archiveLogClick, purgeOrigin, closeConnections
+from utilities import archiveLogClick, purgeOrigin, checkConnections
 import mysql.connector as database
 
 today = DT.date.today()
@@ -33,15 +33,19 @@ try:
     if len(origin_ids) > 0:
         logger.warning('%s rows successfully added into origin' % len(origin_ids))
 
+    # Reconnect
+    checkConnections(connection, "open")
     archive_ids = archiveLogClick(data, ARCHIVE, origin_columns, ARCHIVE_TABLE, batch) # For the new DB
     # clear log_clicks after archived, only after successfully archived, hence the archive_ids length
     if len(archive_ids) > 0:
         logger.warning('%s rows successfully archived' % len(archive_ids))
+        # Reconnect
+        checkConnections(connection, "open")
         purgeOrigin(ORIGIN, archive_ids)
     else:
         logger.info('Nothing is done...')
 
-    closeConnections(connection)
+    checkConnections(connection)
 
 except (database.IntegrityError, database.ProgrammingError) as error:
     logger.warning(error)

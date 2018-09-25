@@ -51,6 +51,12 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
     except database.ProgrammingError as error:
         logger.error("Error {}".format(error))
 
+def checkConnections(connection, status="close"):
+    for key, conn in connection.items():
+        conn.commit()
+        conn.close() if status == "close" else conn.reconnect(attempts=3, delay=0)
+        logger.info("Connections on {} {}".format(key, status))
+
 def purgeOrigin(cursor, item_ids):
     # Delete rows with inserted ids in ARCHIVE
     logger.info("Deleting archived records...")
@@ -70,9 +76,3 @@ def purgeOrigin(cursor, item_ids):
         logger.warning("Error deleting: {}".format(error))
     except database.ProgrammingError as error:
         logger.warning("Error: {}".format(error))
-
-def closeConnections(connection):
-    for key, conn in connection.items():
-        conn.commit()
-        conn.close()
-        logger.info("Operations for {} completed".format(key))
