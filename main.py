@@ -29,10 +29,10 @@ try:
     ORIGIN.execute("desc {}".format(ORIGIN_TABLE))
     origin_columns = ORIGIN.fetchall()
 
-    origin_ids = archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
+    # origin_ids = archiveLogClick(data, ORIGIN,origin_columns, ARCHIVE_TABLE, batch) # For the existing DB
 
-    if len(origin_ids) > 0:
-        logger.warning('%s rows successfully added into origin' % len(origin_ids))
+    # if len(origin_ids) > 0:
+        # logger.warning('%s rows successfully added into origin' % len(origin_ids))
 
     # Reconnect
     connectionStatus(connection, "open")
