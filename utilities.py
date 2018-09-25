@@ -57,6 +57,10 @@ def connectionStatus(connection, status="close"):
             conn.commit()
             conn.close()
         else:
+            try:
+                conn.close()
+            except database.InterfaceError as error:
+                logger.info("Closing connections error: {}".format(error))
             conn.reconnect(attempts=3, delay=0)
         logger.info("Connections on {} {}".format(key, status))
 
