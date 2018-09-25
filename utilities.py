@@ -51,7 +51,7 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
     except database.ProgrammingError as error:
         logger.error("Error {}".format(error))
 
-def checkConnections(connection, status="close"):
+def connectionStatus(connection, status="close"):
     for key, conn in connection.items():
         conn.commit()
         conn.close() if status == "close" else conn.reconnect(attempts=3, delay=0)
