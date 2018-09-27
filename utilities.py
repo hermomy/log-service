@@ -27,23 +27,30 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
             logger.info("Number of rows to migrate: {}".format(total_rows))
             interval = 3
             ids = []
+            errorsid = []
             try:
+                logger.warning("Insert operations is running, please wait...")
                 seq = xrange(total_rows)
                 for batched in batch(seq, int(batch_count)):
                     for item in batched:
                         ids.append(data[item][0]) # Appending duplicate ids for deletion
                         try:
                             cursor.execute(query, data[item])
-                            logger.info("LogClick ID inserted into {}: {}".format(table_into, data[item][0]))
+                            # logger.info("LogClick ID inserted into {}: {}".format(table_into, data[item][0]))
                         except database.IntegrityError as error:
                             total_rows = total_rows - 1
-                            logger.error("{}, continuing...".format(error))
+                            # logger.error("{}, continuing...".format(error))
+                            errorsid.append(data[item][0])
                             pass
                 cursor.execute("select database()")
                 db_name = cursor.fetchone()[0]
+                logger.warning("{} duplicates and will be removed from origin".format(len(errorsid)))
                 logger.info("{} records successfully inserted into {}.{}.".format(total_rows, db_name, table_into))
             except IndexError:
                 logger.warning("End of insert, continuing...")
+            except:
+                logger.warning("Something wrong in utilities...")
+                exit()
             return ids
         else:
             logger.info("Nothing to update.")
@@ -75,7 +82,7 @@ def purgeOrigin(cursor, item_ids):
                 iid = item_ids[d]
                 delquery = "DELETE FROM %s WHERE id = %s" % (ORIGIN_TABLE, iid)
                 cursor.execute(delquery)
-                logger.info("Deleted {}".format(iid))
+                # logger.info("Deleted {}".format(iid))
         cursor.execute("select database()")
         db_name = cursor.fetchone()[0]
         logger.info("{} rows with has been deleted from {}.{}".format(len(item_ids), db_name, ORIGIN_TABLE))
