@@ -42,9 +42,11 @@ def archiveLogClick(data, cursor, column_data, table_into, batch_count):
                             # logger.error("{}, continuing...".format(error))
                             errorsid.append(data[item][0])
                             pass
+                    logger.info("Batch {} completed...continuing".format(batched))
                 cursor.execute("select database()")
                 db_name = cursor.fetchone()[0]
-                logger.warning("{} duplicates and will be removed from origin".format(len(errorsid)))
+                if len(errorsid) > 1:
+                    logger.warning("{} duplicates and will be removed from origin".format(len(errorsid)))
                 logger.info("{} records successfully inserted into {}.{}.".format(total_rows, db_name, table_into))
             except IndexError:
                 logger.warning("End of insert, continuing...")
@@ -65,6 +67,7 @@ def connectionStatus(connection, status="close"):
             conn.close()
         else:
             try:
+                conn.commit()
                 conn.close()
             except database.InterfaceError as error:
                 logger.info("Closing connections error: {}".format(error))
@@ -90,3 +93,5 @@ def purgeOrigin(cursor, item_ids):
         logger.warning("Error deleting: {}".format(error))
     except database.ProgrammingError as error:
         logger.warning("Error: {}".format(error))
+    except database.InterfaceError as error:
+        logger.warning("Interface Error: {}".format(error))
